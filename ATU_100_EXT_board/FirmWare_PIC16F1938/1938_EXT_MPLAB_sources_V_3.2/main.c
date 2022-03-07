@@ -45,7 +45,7 @@ __eeprom unsigned char initial_eeprom[256] = {
     0x78,0x05,0x00,0x15,0x13,0x05,0x00,0x00,0x02,0x00,0x07,0x00,0x07,0x00,0x01,0x00,
     0x00,0x50,0x01,0x10,0x02,0x20,0x04,0x50,0x10,0x00,0x22,0x00,0x45,0x00,0xff,0xff,
     0x00,0x10,0x00,0x22,0x00,0x47,0x01,0x00,0x02,0x20,0x04,0x70,0x10,0x00,0xff,0xff,
-    0x00,0x10,0x00,0x01,0x12,0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+    0x00,0x10,0x00,0x01,0x00,0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
     0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
     0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
     0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
@@ -121,7 +121,8 @@ void main()
     eeprom_write(EEPROM_TANDEM_MATCH,10);
     eeprom_write(EEPROM_DISPLAY_OFF_TIMER,0);
     eeprom_write(EEPROM_ADDITIONAL_INDICATION,1);
-    eeprom_write(EEPROM_FEEDER_LOSS,0x12);
+    //eeprom_write(EEPROM_FEEDER_LOSS,0x12);
+    eeprom_write(EEPROM_FEEDER_LOSS,0x00);
     eeprom_write(EEPROM_DISABLE_RELAYS,0x0);
     eeprom_write(EEPROM_LAST_SWR_L,0x18);
     eeprom_write(EEPROM_LAST_SWR_H,0);
@@ -134,6 +135,8 @@ void main()
    if (STATUSbits.nTO == 0)
       g_b_Restart = 1;
    pic_init();
+   
+   
    //
    Delay_ms(300);
    CLRWDT();
@@ -982,7 +985,7 @@ void lcd_pwr()
    int SWR_fixed;
    g_i_PWR = 0;
    CLRWDT();
-   //
+   //Exit battery saving mode
    if (g_b_display_onoff == 0 & e_c_b_Relay_off == 1)
    {
       get_pwr();
@@ -1012,6 +1015,8 @@ void lcd_pwr()
          }
       }
       get_pwr();
+      
+      
       if (g_i_PWR > p)
       {
          p = g_i_PWR;
@@ -1062,52 +1067,78 @@ void lcd_pwr()
    CLRWDT();
    if (g_b_Overload == 1)
    {
-      if (e_c_ledtype == 4 | e_c_ledtype == 5)
+//      if (e_c_ledtype == 4 | e_c_ledtype == 5)
+//      { // 128*64 OLED
+//         led_wr_str(2, 16, "        ", 8);
+//         Delay_ms(100);
+//         led_wr_str(2, 16, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(2, 16, "        ", 8);
+//         Delay_ms(300);
+//         CLRWDT();
+//         led_wr_str(2, 16, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(2, 16, "        ", 8);
+//         Delay_ms(300);
+//         CLRWDT();
+//         led_wr_str(2, 16, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(2, 16, "        ", 8);
+//         Delay_ms(100);
+//         led_wr_str(2, 16, "SWR=    ", 8);
+//      }
+//      else if (e_c_ledtype != 0)
+//      { // 1602  & 128*32
+//         led_wr_str(1, 0, "        ", 8);
+//         Delay_ms(100);
+//         led_wr_str(1, 0, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(1, 0, "        ", 8);
+//         Delay_ms(300);
+//         CLRWDT();
+//         led_wr_str(1, 0, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(1, 0, "        ", 8);
+//         Delay_ms(300);
+//         CLRWDT();
+//         led_wr_str(1, 0, "OVERLOAD", 8);
+//         Delay_ms(500);
+//         CLRWDT();
+//         led_wr_str(1, 0, "        ", 8);
+//         Delay_ms(100);
+//         led_wr_str(1, 0, "SWR=    ", 8);
+//      }
+      
+      char col;
+      char pos; 
+      
+      if ((e_c_ledtype == 4) || (e_c_ledtype == 5))
       { // 128*64 OLED
-         led_wr_str(2, 16, "        ", 8);
-         Delay_ms(100);
-         led_wr_str(2, 16, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(2, 16, "        ", 8);
-         Delay_ms(300);
-         CLRWDT();
-         led_wr_str(2, 16, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(2, 16, "        ", 8);
-         Delay_ms(300);
-         CLRWDT();
-         led_wr_str(2, 16, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(2, 16, "        ", 8);
-         Delay_ms(100);
-         led_wr_str(2, 16, "SWR=    ", 8);
+        col=2;
+        pos=16;
       }
       else if (e_c_ledtype != 0)
       { // 1602  & 128*32
-         led_wr_str(1, 0, "        ", 8);
-         Delay_ms(100);
-         led_wr_str(1, 0, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(1, 0, "        ", 8);
-         Delay_ms(300);
-         CLRWDT();
-         led_wr_str(1, 0, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(1, 0, "        ", 8);
-         Delay_ms(300);
-         CLRWDT();
-         led_wr_str(1, 0, "OVERLOAD", 8);
-         Delay_ms(500);
-         CLRWDT();
-         led_wr_str(1, 0, "        ", 8);
-         Delay_ms(100);
-         led_wr_str(1, 0, "SWR=    ", 8);
+        col=1;
+        pos=0;
       }
+      for(char i=0; i<3; i++)
+      {
+        led_wr_str(col, pos, "        ", 8);
+        Delay_ms(100);
+        led_wr_str(col, pos, "OVERLOAD", 8);
+        Delay_ms(500);
+        CLRWDT();
+      }
+      led_wr_str(2, 16, "        ", 8);
+      Delay_ms(100);
+      led_wr_str(2, 16, "SWR=    ", 8);
+      //----
       CLRWDT();
       g_i_SWR_old = DEFAULT_INITIAL_OLD_VALUE;
       lcd_swr(SWR_fixed);

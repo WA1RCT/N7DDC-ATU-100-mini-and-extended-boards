@@ -500,10 +500,18 @@ void led_wr_str(char col, char pos, char str[], char leng)
     PRINTLINE(myquote)  
 #endif
 #ifdef UART
-   char g_work_str_u[7];
-   int position = col * 1000 + pos;
-   IntToStr(position,g_work_str_u);
-   uart_wr_str(g_work_str_u,str,leng);
+   char strPos[7];
+   int position = (int)col * 1000 + pos;
+   IntToStr(position,strPos);
+   if (strPos[2] == ' ') strPos[2] = '0';
+   if (strPos[3] == ' ') strPos[3] = '0';
+   if (strPos[4] == ' ') strPos[4] = '0';
+   if (strPos[5] == ' ') strPos[5] = '0';
+   
+   uart_wr_str(&strPos[2],4);
+   uart_wr_str(":",1);
+   uart_wr_str_ln(str,leng);
+   
 #endif            
    char i;
    if (e_c_led_type == 4 | e_c_led_type == 5)

@@ -161,11 +161,11 @@ void debugprint(void);
 
 #define DELAY_5_US_CLOCK 20
 
-#define Delay_5_us() _delay((unsigned long)(DELAY_5_US_CLOCK));
+#define Delay_5_us() _delay((unsigned long)(DELAY_5_US_CLOCK)) //;
 
 #define DELAY_100_US_CLOCK 400
 
-#define Delay_100_us() _delay((unsigned long)(DELAY_100_US_CLOCK));
+#define Delay_100_us() _delay((unsigned long)(DELAY_100_US_CLOCK)) //;
     void Delay_ms(const unsigned int time_in_ms);
 
     unsigned int ADC_Get_Sample(char channel);
@@ -189,10 +189,12 @@ void debugprint(void);
 //  uncomment out the next line if you want to have a uart output the
 //  displayed strings
 //////#define UART
-
+  
 //  the posstr is the position.  
 //   the thousands digit is the row, the 3 ls digits is the column
-void uart_wr_str(char posstr[],char str[], char leng);
+//void uart_wr_str(char posstr[],char str[], char leng);
+void uart_wr_str(char str[], char length);
+void uart_wr_str_ln(char str[], char length);
 
 //  the Version 3.2 uses A6 and A7 for the Tx lines to the transmitter
 //  And the data and clock lines to the Display uses B6 and B7, (also for the 
@@ -206,10 +208,10 @@ void uart_wr_str(char posstr[],char str[], char leng);
 
 //  uncomment out the next line to move the LED I2C to A6 and A7
 //////#define WA1RCT
-    
+
 #ifdef WA1RCT
 
-#define UART_OUT_PIN PORTB_AUTO_BUTTON
+#define UART_OUT_PIN LATBbits.LATB1
 
 //  this effectively disables n_Tx, p_Tx, Green_led and Red_led
 //  since these pins are defined as INPUTS

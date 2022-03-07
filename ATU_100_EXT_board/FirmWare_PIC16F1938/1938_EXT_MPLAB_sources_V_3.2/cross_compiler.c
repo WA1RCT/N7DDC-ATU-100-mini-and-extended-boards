@@ -76,13 +76,12 @@ void Delay_ms(const unsigned int time_in_ms)
 unsigned int ADC_Get_Sample(char channel)
 {
   ADCON0bits.CHS = channel;
-  ADCON0bits.ADGO = 1; /* start A/D */
   Delay_5_us();
-  while (ADCON0bits.ADGO == 1)
-    ;
+  ADCON0bits.ADGO = 1; /* start A/D */
+  while (ADCON0bits.ADGO == 1);
   unsigned char lower = ADRESL;
   unsigned char upper = ADRESH;
-  unsigned int result = (unsigned int)(upper << 8) + lower;
+  unsigned int result = ((unsigned int)upper << 8) + lower;
   return result;
 };
 
@@ -149,6 +148,7 @@ void IntToStr(int number, char *output)
     p++;
     loopcounter++;
   } while (loopcounter < 6);
+  
   p = output + 5; /* point to the last digit */
   if (number >= 0)
   {

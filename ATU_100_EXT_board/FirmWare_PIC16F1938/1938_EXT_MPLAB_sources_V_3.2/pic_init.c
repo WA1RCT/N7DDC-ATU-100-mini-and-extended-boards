@@ -20,7 +20,7 @@ void pic_init(void)
   ANSELAbits.ANSA0 = 1; // analog inputs
   ANSELAbits.ANSA1 = 1;
   ANSELBbits.ANSELB = 0; // all as digital
-
+  
   CM1CON0bits.C1ON = 0; // Disable comparators
   CM2CON0bits.C2ON = 0;
 
@@ -34,34 +34,36 @@ void pic_init(void)
   LATB = 0;
   LATC = 0;
   TRISA = 0b00000011;
-  //  If we are using the bypass button for an output for uart
-  //  set B1 (auto) to an output
-#ifdef UART
   
-#ifdef WA1RCT
+  
+  //  If we are using the auto button for an output for uart
+  //  set B1 (auto) to an output
+#if (defined(UART) && defined(WA1RCT))  
   TRISB = 0b00000101;
 #else
   TRISB = 0b00000111;  
 #endif
   
-#else
-  TRISB = 0b00000111;  
-#endif
+  
   TRISC = 0b00000000; //
   //
   ADC_Init();
 
-  ADCON1bits.ADPREF0 = 1; // ADC with the internal reference
-  ADCON1bits.ADPREF1 = 1;
-
+  
   /* init the ADC here */
-  FVRCON = 0x81;        /*enable FVR */
-//  ADCON1bits.ADCS0 = 0; /* use Fosc/32 */
-//  ADCON1bits.ADCS1 = 1;
-//  ADCON1bits.ADCS2 = 0;
-//
-  ADCON1 = 0xA0;  /* use Fosc/32 */
+  //FVRCON = 0x81;        /*enable FVR */
+  FVRCON = 0b10000011; // ADC 4096 mV Vref
+  
+  
+  //ADCON1 settings 
+  ADCON1bits.ADFM = 1; //right justified format 
+  ADCON1bits.ADCS = 2; //Fosc/32
+  
+  ADCON1bits.ADNREF = 0;  //negative Ref to Vss
+  ADCON1bits.ADPREF = 3; //positive Ref to FVR module
+  
 
+  //ADCON0 settings
   ADCON0bits.ADON = 1;
   //
   OPTION_REGbits.nWPUEN = 0;
